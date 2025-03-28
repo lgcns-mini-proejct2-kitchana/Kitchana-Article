@@ -19,7 +19,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/apps")
-@RefreshScope
 public class ArticleController {
 
     @Autowired
