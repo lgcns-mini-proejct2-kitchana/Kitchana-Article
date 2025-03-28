@@ -21,6 +21,7 @@ import java.util.Map;
 @RequestMapping("/apps")
 public class ArticleController {
 
+    private Environment env;
     @Autowired
     private RandomNewsService randomNewsService;
     @Autowired
