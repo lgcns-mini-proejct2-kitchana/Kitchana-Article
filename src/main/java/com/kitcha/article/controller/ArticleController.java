@@ -19,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/apps")
+@RefreshScope
 public class ArticleController {
 
     @Autowired
@@ -91,5 +92,11 @@ public class ArticleController {
         List<MyPickNewsResponseDto> newsList = uploadNewsService.processUploadedImage(file);
         // 2. 결과 반환
         return ResponseEntity.ok(newsList);
+    }
+
+
+    @GetMapping("/health-check")
+    public String status() {
+        return env.getProperty("key");
     }
 }
