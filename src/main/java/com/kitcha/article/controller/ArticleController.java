@@ -99,7 +99,7 @@ public class ArticleController {
 
     @GetMapping("/health-check")
     public String status() {
-        return String.format("key %s",
+        return String.format("bus-refresh test: %s",
                 env.getProperty("key"));
     }
 }
