@@ -72,6 +72,7 @@ pipeline {
     post {
         success {
             echo 'pipeline succeeded'
+            echo 'webhook test'
         }
         failure {
             echo 'Pipeline failed'
