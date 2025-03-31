@@ -3,6 +3,7 @@
 # 예상 환경변수: AWS_ECR_URI, TAG, CONTAINER_NAME
 
 # 모든 출력(표준 출력, 에러)을 /tmp/deploy_debug.log에 기록
+# 39번째 시도
 LOG_FILE="./deploy_debug.log"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
