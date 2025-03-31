@@ -3,13 +3,13 @@
 # 예상 환경변수: AWS_ECR_URI, TAG, CONTAINER_NAME
 
 # 모든 출력(표준 출력, 에러)을 /tmp/deploy_debug.log에 기록
-LOG_FILE="/tmp/deploy_debug.log"
+LOG_FILE="./deploy_debug.log"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
-echo ">>> 현재 디렉토리: $(pwd)"
-echo ">>> 환경 변수 TAG: '$TAG'"
-echo ">>> 환경 변수 AWS_ECR_URI: '$AWS_ECR_URI'"
-echo ">>> 환경 변수 CONTAINER_NAME: '$CONTAINER_NAME'"
+echo ">>> 시작: 현재 디렉토리: $(pwd)" >> "$LOG_FILE" 2>&1
+echo ">>> 환경 변수 TAG: '$TAG'" >> "$LOG_FILE" 2>&1
+echo ">>> 환경 변수 AWS_ECR_URI: '$AWS_ECR_URI'" >> "$LOG_FILE" 2>&1
+echo ">>> 환경 변수 CONTAINER_NAME: '$CONTAINER_NAME'" >> "$LOG_FILE" 2>&1
 
 # .env 파일이 있는지 확인하고 없으면 생성
 if [ ! -f .env ]; then
