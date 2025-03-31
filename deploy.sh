@@ -1,32 +1,22 @@
 #!/bin/bash
-# deploy.sh for Kitchana-Article using docker-compose with debug logging
-# 예상 환경변수: AWS_ECR_URI, TAG, CONTAINER_NAME
+# deploy.sh for Kitchana-Article using docker-compose
+# 예상 환경변수: AWS_ECR_URI, TAG
+# docker-compose.yml 파일은 article 서비스를 정의하고 있어야 합니다.
+# 예시로, docker-compose.yml 내 article 서비스의 image는:
+#   image: ${AWS_ECR_URI}/kitchana/article:${TAG}
+# 와 같이 구성되어 있어야 합니다.
 
-# 모든 출력(표준 출력, 에러)을 /tmp/deploy_debug.log에 기록
-# 39번째 시도
-LOG_FILE="./deploy_debug.log"
-exec > >(tee -a "$LOG_FILE") 2>&1
+# docker-compose.yml 파일이 위치한 디렉토리 (실제 경로로 수정)
+COMPOSE_DIR="/home/ec2-user/inner"
+REPO="kitchana/article"
+REGION="ap-southeast-2"
 
-echo ">>> 시작: 현재 디렉토리: $(pwd)" >> "$LOG_FILE" 2>&1
-echo ">>> 환경 변수 TAG: '$TAG'" >> "$LOG_FILE" 2>&1
-echo ">>> 환경 변수 AWS_ECR_URI: '$AWS_ECR_URI'" >> "$LOG_FILE" 2>&1
-echo ">>> 환경 변수 CONTAINER_NAME: '$CONTAINER_NAME'" >> "$LOG_FILE" 2>&1
+cd "$COMPOSE_DIR" || { echo "Compose directory not found"; exit 1; }
 
-# .env 파일이 있는지 확인하고 없으면 생성
-if [ ! -f .env ]; then
-  echo ".env 파일이 존재하지 않습니다. 새로 생성합니다."
-  touch .env
-fi
-
-echo ">>> .env 파일 내용 BEFORE update:"
-cat .env
-
-# hi.txt 파일 생성 (디버깅용)
 echo "TAG=$TAG" > hi.txt
-echo ">>> hi.txt 파일 생성됨:"
-cat hi.txt
 
-# .env 파일에 ARTICLE_TAG 업데이트 (또는 추가)
+# .env 파일에 새로운 LATEST_TAG 넣어주기
+# 36번째 빌드 실험해보기
 if grep -q '^ARTICLE_TAG=' .env; then
   echo "🔧 기존 ARTICLE_TAG 값을 $TAG 으로 교체"
   sed -i "s|^ARTICLE_TAG=.*|ARTICLE_TAG=$TAG|" .env
@@ -35,11 +25,6 @@ else
   echo "ARTICLE_TAG=$TAG" >> .env
 fi
 
-echo ">>> .env 파일 내용 AFTER update:"
-cat .env
 
-# docker-compose를 통한 article 서비스 업데이트
-echo ">>> article 서비스 업데이트 시작"
-docker-compose pull article
-docker-compose up -d --no-deps --force-recreate article
-echo ">>> article 서비스 업데이트 완료"
+# article 컨테이너만 강제 재생성 (기존 컨테이너 종료 및 삭제 후 새 컨테이너 실행)
+docker-compose up -f docker-compose-inner.yml -d --no-deps --force-recreate article 
