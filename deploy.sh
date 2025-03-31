@@ -12,7 +12,7 @@ COMPOSE_DIR="/home/ec2-user/inner"
 cd "$COMPOSE_DIR" || { echo "Compose directory not found"; exit 1; }
 
 # 최신 article 이미지 가져오기
-docker-compose pull "$AWS_ECR_URI"/kitchana/article:"$TAG"
+docker-compose pull article
 
 # article 컨테이너만 강제 재생성 (기존 컨테이너 종료 및 삭제 후 새 컨테이너 실행)
 docker-compose up -f docker-compose-inner.yml -d --no-deps --force-recreate article 
