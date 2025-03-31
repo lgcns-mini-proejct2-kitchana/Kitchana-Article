@@ -37,66 +37,74 @@ pipeline {
 
         stage('Build Docker Image & Push to ECR') {
             steps {
-                sshPublisher(publishers: [
-                    sshPublisherDesc(
-                        configName: 'kitchana-docker',  // EC2에 대한 SSH 구성 이름
-                        transfers: [
-                            sshTransfer(
-                                cleanRemote: false,
-                                excludes: '',
-                                execCommand: """
-                                    docker build -t ${env.AWS_ECR_URI}/kitchana/article:$TAG -f ./inner/DockerfileArticle ./inner
-
-                                    docker push ${env.AWS_ECR_URI}/kitchana/article:$TAG
-                                """,
-                                execTimeout: 180000,
-                                flatten: false,
-                                makeEmptyDirs: false,
-                                noDefaultExcludes: false,
-                                patternSeparator: '[, ]+',
-                                remoteDirectory: './inner',
-                                remoteDirectorySDF: false,
-                                removePrefix: 'build/libs',
-                                sourceFiles: 'build/libs/article-0.0.1-SNAPSHOT.jar'  // 'article' 관련 JAR만 선택
-                            )
-                        ],
-                        usePromotionTimestamp: false,
-                        useWorkspaceInPromotion: false,
-                        verbose: false
-                    )
-                ])
+                script {
+                    def tag = (params.TAG == 'latest' || params.TAG.trim() == '') ? env.BUILD_NUMBER : params.TAG
+                    
+                    sshPublisher(publishers: [
+                        sshPublisherDesc(
+                            configName: 'kitchana-docker',  // EC2에 대한 SSH 구성 이름
+                            transfers: [
+                                sshTransfer(
+                                    cleanRemote: false,
+                                    excludes: '',
+                                    execCommand: """
+                                        docker build -t ${env.AWS_ECR_URI}/kitchana/article:${tag} -f ./inner/DockerfileArticle ./inner
+    
+                                        docker push ${env.AWS_ECR_URI}/kitchana/article:${tag}
+                                    """,
+                                    execTimeout: 180000,
+                                    flatten: false,
+                                    makeEmptyDirs: false,
+                                    noDefaultExcludes: false,
+                                    patternSeparator: '[, ]+',
+                                    remoteDirectory: './inner',
+                                    remoteDirectorySDF: false,
+                                    removePrefix: 'build/libs',
+                                    sourceFiles: 'build/libs/article-0.0.1-SNAPSHOT.jar'  // 'article' 관련 JAR만 선택
+                                )
+                            ],
+                            usePromotionTimestamp: false,
+                            useWorkspaceInPromotion: false,
+                            verbose: false
+                        )
+                    ])
+                }
             }
         }
         
         // *** Deploy 단계 추가
         stage('Deploy to EC2') {
             steps {
-                sshPublisher(publishers: [
-                    sshPublisherDesc(
-                        configName: 'kitchana-docker',
-                        transfers: [
-                            sshTransfer(
-                                cleanRemote: false,
-                                excludes: '',
-                                sourceFiles: 'deploy.sh',
-                                removePrefix: '',
-                                remoteDirectory: '/tmp',
-                                execCommand: """
-                                    chmod +x /tmp/deploy.sh && \
-                                    AWS_ECR_URI=${AWS_ECR_URI} TAG=${TAG} CONTAINER_NAME=kitchana-article /tmp/deploy.sh
-                                """,
-                                execTimeout: 180000,
-                                flatten: false,
-                                makeEmptyDirs: false,
-                                noDefaultExcludes: false,
-                                patternSeparator: '[, ]+'
-                            )
-                        ],
-                        usePromotionTimestamp: false,
-                        useWorkspaceInPromotion: false,
-                        verbose: false
-                    )
-                ])
+                script {
+                  def tag = (params.TAG == 'latest' || params.TAG.trim() == '') ? env.BUILD_NUMBER : params.TAG
+
+                    sshPublisher(publishers: [
+                        sshPublisherDesc(
+                            configName: 'kitchana-docker',
+                            transfers: [
+                                sshTransfer(
+                                    cleanRemote: false,
+                                    excludes: '',
+                                    sourceFiles: 'deploy.sh',
+                                    removePrefix: '',
+                                    remoteDirectory: '/tmp',
+                                    execCommand: """
+                                        chmod +x /tmp/deploy.sh && \
+                                        AWS_ECR_URI=${AWS_ECR_URI} TAG=${tag} CONTAINER_NAME=kitchana-article /tmp/deploy.sh
+                                    """,
+                                    execTimeout: 180000,
+                                    flatten: false,
+                                    makeEmptyDirs: false,
+                                    noDefaultExcludes: false,
+                                    patternSeparator: '[, ]+'
+                                )
+                            ],
+                            usePromotionTimestamp: false,
+                            useWorkspaceInPromotion: false,
+                            verbose: false
+                        )
+                    ])
+                }
             }
         }
     }
