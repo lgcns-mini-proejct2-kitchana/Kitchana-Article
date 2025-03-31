@@ -67,6 +67,38 @@ pipeline {
                 ])
             }
         }
+        
+        // *** Deploy 단계 추가
+        stage('Deploy to EC2') {
+            steps {
+                sshPublisher(publishers: [
+                    sshPublisherDesc(
+                        configName: 'kitchana-docker',
+                        transfers: [
+                            sshTransfer(
+                                cleanRemote: false,
+                                excludes: '',
+                                sourceFiles: 'deploy.sh',
+                                removePrefix: '',
+                                remoteDirectory: '/tmp',
+                                execCommand: """
+                                    chmod +x /tmp/deploy.sh && \
+                                    AWS_REGION=${AWS_REGION} AWS_ECR_URI=${AWS_ECR_URI} TAG=${TAG} CONTAINER_NAME=kitchana-article /tmp/deploy.sh
+                                """,
+                                execTimeout: 180000,
+                                flatten: false,
+                                makeEmptyDirs: false,
+                                noDefaultExcludes: false,
+                                patternSeparator: '[, ]+'
+                            )
+                        ],
+                        usePromotionTimestamp: false,
+                        useWorkspaceInPromotion: false,
+                        verbose: false
+                    )
+                ])
+            }
+        }
     }
 
     post {
