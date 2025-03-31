@@ -45,7 +45,7 @@ pipeline {
                                 cleanRemote: false,
                                 excludes: '',
                                 execCommand: """
-                                    docker build -t ${env.AWS_ECR_URI}/kitchana/article:$TAG -f ./inner/DockerfileArticle .
+                                    docker build -t ${env.AWS_ECR_URI}/kitchana/article:$TAG -f ./inner/DockerfileArticle ./inner
 
                                     docker push ${env.AWS_ECR_URI}/kitchana/article:$TAG
                                 """,
