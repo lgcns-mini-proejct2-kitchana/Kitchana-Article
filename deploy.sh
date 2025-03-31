@@ -13,22 +13,15 @@ REGION="ap-southeast-2"
 
 cd "$COMPOSE_DIR" || { echo "Compose directory not found"; exit 1; }
 
-# ECR에 있는 최신 이미지 태그 가져오기
-LATEST_TAG=$(aws ecr describe-images \
-  --repository-name $REPO \
-  --region $REGION \
-  --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' \
-  --output text)
-
 # 최신 이미지 태그를 이용해서 article 이미지 가져오기
-docker pull ${AWS_ECR_URI}/$REPO:$LATEST_TAG
+docker pull ${AWS_ECR_URI}/$REPO:$TAG
 
 echo "새로운 이미지 pull 성공???"
 
 # .env 파일에 새로운 LATEST_TAG 넣어주기
 grep -q '^ARTICLE_TAG=' .env \
-  && sed -i "s/^ARTICLE_TAG=.*/ARTICLE_TAG=$LATEST_TAG/" .env \
-  || echo "ARTICLE_TAG=$LATEST_TAG" >> .env
+  && sed -i "s/^ARTICLE_TAG=.*/ARTICLE_TAG=$TAG/" .env \
+  || echo "ARTICLE_TAG=$TAG" >> .env
 
 # article 컨테이너만 강제 재생성 (기존 컨테이너 종료 및 삭제 후 새 컨테이너 실행)
 docker-compose up -f docker-compose-inner.yml -d --no-deps --force-recreate article 
