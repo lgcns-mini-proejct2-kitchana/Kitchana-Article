@@ -13,7 +13,7 @@ REGION="ap-southeast-2"
 
 cd "$COMPOSE_DIR" || { echo "Compose directory not found"; exit 1; }
 
-echo "TAG=$TAG"
+echo "TAG=$TAG" > hi.txt
 
 # .env 파일에 새로운 LATEST_TAG 넣어주기
 if grep -q '^ARTICLE_TAG=' .env; then
