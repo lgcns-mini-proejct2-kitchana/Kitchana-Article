@@ -83,7 +83,7 @@ pipeline {
                                 remoteDirectory: '/tmp',
                                 execCommand: """
                                     chmod +x /tmp/deploy.sh && \
-                                    AWS_REGION=${AWS_REGION} AWS_ECR_URI=${AWS_ECR_URI} TAG=${TAG} CONTAINER_NAME=kitchana-article /tmp/deploy.sh
+                                    AWS_ECR_URI=${AWS_ECR_URI} TAG=${TAG} CONTAINER_NAME=kitchana-article /tmp/deploy.sh
                                 """,
                                 execTimeout: 180000,
                                 flatten: false,
