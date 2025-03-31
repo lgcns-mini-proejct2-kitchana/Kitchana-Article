@@ -18,7 +18,7 @@ echo "TAG=$TAG" > hi.txt
 # .env 파일에 새로운 LATEST_TAG 넣어주기
 if grep -q '^ARTICLE_TAG=' .env; then
   echo "🔧 기존 ARTICLE_TAG 값을 $TAG 으로 교체"
-  sed -i "s/^ARTICLE_TAG=.*/ARTICLE_TAG=$TAG/" .env
+  sed -i "s|^ARTICLE_TAG=.*|ARTICLE_TAG=$TAG|" .env
 else
   echo "➕ ARTICLE_TAG=$TAG 추가"
   echo "ARTICLE_TAG=$TAG" >> .env
