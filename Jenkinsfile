@@ -88,10 +88,13 @@ pipeline {
                                     sourceFiles: 'deploy.sh',
                                     removePrefix: '',
                                     remoteDirectory: '/tmp',
-                                    execCommand: """
-                                        chmod +x /tmp/deploy.sh && \
-                                        AWS_ECR_URI=${env.AWS_ECR_URI} TAG=${tag} CONTAINER_NAME=kitchana-article ./tmp/deploy.sh
-                                    """,
+                                    execCommand: '''
+                                        cd /home/ec2-user/tmp
+                                        chmod +x deploy.sh
+                                        export TAG=${tag}
+                                        export CONTAINER_NAME=kitchana-article
+                                        ./deploy.sh
+                                    ''',
                                     execTimeout: 180000,
                                     flatten: false,
                                     makeEmptyDirs: false,
