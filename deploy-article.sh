@@ -8,14 +8,6 @@ COMPOSE_DIR="/home/ec2-user/inner"
 
 cd "$COMPOSE_DIR" || { echo "Compose directory not found"; exit 1; }
 
-# 환경변수 출력
-echo "받아온 값들:"
-echo "- TAG: $TAG"
-echo "- 컨테이너 이름: $CONTAINER_NAME"
-
-# 현재 경로
-echo "현재 위치: $(pwd)"
-
 # .env 파일에 새로운 최신화된 TAG 넣어주기
 sed -i "s|^ARTICLE_TAG=.*|ARTICLE_TAG=$TAG|" .env
 
