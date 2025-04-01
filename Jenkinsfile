@@ -85,12 +85,12 @@ pipeline {
                                 sshTransfer(
                                     cleanRemote: false,
                                     excludes: '',
-                                    sourceFiles: 'deploy.sh',
+                                    sourceFiles: 'deploy-article.sh',
                                     removePrefix: '',
                                     remoteDirectory: '/tmp',
                                     execCommand: """
                                         cd /home/ec2-user/tmp
-                                        chmod +x deploy.sh
+                                        chmod +x deploy-article.sh
                                         export TAG=${tag}
                                         export CONTAINER_NAME=kitchana-article
                                         ./deploy.sh
