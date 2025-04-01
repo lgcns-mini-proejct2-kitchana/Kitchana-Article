@@ -5,13 +5,11 @@ set -e
 
 # docker-compose.yml 파일이 위치한 디렉토리 (실제 경로로 수정)
 COMPOSE_DIR="/home/ec2-user/inner"
-REPO="kitchana/article"
 
 cd "$COMPOSE_DIR" || { echo "Compose directory not found"; exit 1; }
 
 # 환경변수 출력
 echo "받아온 값들:"
-echo "- AWS ECR URI: $AWS_ECR_URI"
 echo "- TAG: $TAG"
 echo "- 컨테이너 이름: $CONTAINER_NAME"
 
