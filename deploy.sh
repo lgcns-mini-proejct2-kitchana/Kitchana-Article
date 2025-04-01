@@ -3,18 +3,9 @@
 
 set -e
 
-# 모든 출력 tee로 중계
-exec > >(tee -a /tmp/deploy.log) 2>&1
-
-# 환경변수 확인 (안 들어왔을 경우 종료)
-: "${AWS_ECR_URI:?환경변수 AWS_ECR_URI 가 필요합니다}"
-: "${TAG:?환경변수 TAG 가 필요합니다}"
-: "${CONTAINER_NAME:?환경변수 CONTAINER_NAME 가 필요합니다}"
-
 # docker-compose.yml 파일이 위치한 디렉토리 (실제 경로로 수정)
 COMPOSE_DIR="/home/ec2-user/inner"
 REPO="kitchana/article"
-REGION="ap-southeast-2"
 
 cd "$COMPOSE_DIR" || { echo "Compose directory not found"; exit 1; }
 
