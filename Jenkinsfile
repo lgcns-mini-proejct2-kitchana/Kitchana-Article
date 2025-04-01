@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         GIT_TARGET_BRANCH = 'main'
-        GIT_REPOSITORY_URL = 'https://github.com/lgcns-mini-proejct2-kitchana/Kitchana-Authentication.git'
+        GIT_REPOSITORY_URL = 'https://github.com/lgcns-mini-proejct2-kitchana/Kitchana-Article.git'
     }
 
     parameters {
@@ -48,8 +48,8 @@ pipeline {
                                     cleanRemote: false,
                                     excludes: '',
                                     execCommand: """
-                                        docker build -t ${env.AWS_ECR_URI}/kitchana/authentication:${tag} -f ./inner/DockerfileAuth ./inner
-                                        docker push ${env.AWS_ECR_URI}/kitchana/authentication:${tag}
+                                        docker build -t ${env.AWS_ECR_URI}/kitchana/article:${tag} -f ./inner/DockerfileArticle ./inner
+                                        docker push ${env.AWS_ECR_URI}/kitchana/article:${tag}
                                     """,
                                     execTimeout: 180000,
                                     flatten: false,
@@ -59,7 +59,7 @@ pipeline {
                                     remoteDirectory: './inner',
                                     remoteDirectorySDF: false,
                                     removePrefix: 'build/libs',
-                                    sourceFiles: 'build/libs/authentication-0.0.1-SNAPSHOT.jar'
+                                    sourceFiles: 'build/libs/article-0.0.1-SNAPSHOT.jar'
                                 )
                             ],
                             usePromotionTimestamp: false,
@@ -83,14 +83,14 @@ pipeline {
                                 sshTransfer(
                                     cleanRemote: false,
                                     excludes: '',
-                                    sourceFiles: 'deploy-auth.sh',
+                                    sourceFiles: 'deploy-article.sh',
                                     removePrefix: '',
                                     remoteDirectory: '/tmp',
                                     execCommand: """
                                         cd /home/ec2-user/tmp
-                                        chmod +x deploy-auth.sh
+                                        chmod +x deploy-article.sh
                                         export TAG=${tag}
-                                        ./deploy-auth.sh
+                                        ./deploy-article.sh
                                     """,
                                     execTimeout: 180000,
                                     flatten: false,
