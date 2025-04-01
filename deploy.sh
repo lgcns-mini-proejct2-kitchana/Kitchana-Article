@@ -1,10 +1,15 @@
 #!/bin/bash
 # deploy.sh for Kitchana-Article using docker-compose
-# 예상 환경변수: AWS_ECR_URI, TAG
-# docker-compose.yml 파일은 article 서비스를 정의하고 있어야 합니다.
-# 예시로, docker-compose.yml 내 article 서비스의 image는:
-#   image: ${AWS_ECR_URI}/kitchana/article:${TAG}
-# 와 같이 구성되어 있어야 합니다.
+
+set -e
+
+# 모든 출력 tee로 중계
+exec > >(tee -a /tmp/deploy.log) 2>&1
+
+# 환경변수 확인 (안 들어왔을 경우 종료)
+: "${AWS_ECR_URI:?환경변수 AWS_ECR_URI 가 필요합니다}"
+: "${TAG:?환경변수 TAG 가 필요합니다}"
+: "${CONTAINER_NAME:?환경변수 CONTAINER_NAME 가 필요합니다}"
 
 # docker-compose.yml 파일이 위치한 디렉토리 (실제 경로로 수정)
 COMPOSE_DIR="/home/ec2-user/inner"
@@ -13,18 +18,18 @@ REGION="ap-southeast-2"
 
 cd "$COMPOSE_DIR" || { echo "Compose directory not found"; exit 1; }
 
-echo "TAG=$TAG" > hi.txt
+# 환경변수 출력
+echo "받아온 값들:"
+echo "- AWS ECR URI: $AWS_ECR_URI"
+echo "- TAG: $TAG"
+echo "- 컨테이너 이름: $CONTAINER_NAME"
 
-# .env 파일에 새로운 LATEST_TAG 넣어주기
-# 36번째 빌드 실험해보기
-if grep -q '^ARTICLE_TAG=' .env; then
-  echo "🔧 기존 ARTICLE_TAG 값을 $TAG 으로 교체"
-  sed -i "s|^ARTICLE_TAG=.*|ARTICLE_TAG=$TAG|" .env
-else
-  echo "➕ ARTICLE_TAG=$TAG 추가"
-  echo "ARTICLE_TAG=$TAG" >> .env
-fi
+# 현재 경로
+echo "현재 위치: $(pwd)"
+
+# .env 파일에 새로운 최신화된 TAG 넣어주기
+sed -i "s|^ARTICLE_TAG=.*|ARTICLE_TAG=$TAG|" .env
 
 
-# article 컨테이너만 강제 재생성 (기존 컨테이너 종료 및 삭제 후 새 컨테이너 실행)
-docker-compose up -f docker-compose-inner.yml -d --no-deps --force-recreate article 
+# article 컨테이너만 강제 재생성 (기존 컨테이너가 있다면 종료 및 삭제 후 새 컨테이너 실행 / 없을 경우 시작)
+docker-compose -f docker-compose-inner.yml up -d --no-deps --force-recreate article
