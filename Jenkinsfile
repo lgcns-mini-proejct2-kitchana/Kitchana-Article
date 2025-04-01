@@ -76,7 +76,8 @@ pipeline {
         stage('Deploy to EC2') {
             steps {
                 script {
-                  def tag = (params.TAG == 'latest' || params.TAG.trim() == '') ? env.BUILD_NUMBER : params.TAG
+                    def tag = (params.TAG == 'latest' || params.TAG.trim() == '') ? env.BUILD_NUMBER : params.TAG
+                    echo "DEBUG :: AWS_ECR_URI=$AWS_ECR_URI, TAG=$TAG, CONTAINER_NAME=$CONTAINER_NAME"
 
                     sshPublisher(publishers: [
                         sshPublisherDesc(
