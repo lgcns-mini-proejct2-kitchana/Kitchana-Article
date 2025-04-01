@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         GIT_TARGET_BRANCH = 'main'
-        GIT_REPOSITORY_URL = 'https://github.com/lgcns-mini-proejct2-kitchana/Kitchana-Article.git'
+        GIT_REPOSITORY_URL = 'https://github.com/lgcns-mini-proejct2-kitchana/Kitchana-Authentication.git'
     }
 
     parameters {
@@ -39,18 +39,17 @@ pipeline {
             steps {
                 script {
                     def tag = (params.TAG == 'latest' || params.TAG.trim() == '') ? env.BUILD_NUMBER : params.TAG
-                    
+
                     sshPublisher(publishers: [
                         sshPublisherDesc(
-                            configName: 'kitchana-docker',  // EC2에 대한 SSH 구성 이름
+                            configName: 'kitchana-docker',
                             transfers: [
                                 sshTransfer(
                                     cleanRemote: false,
                                     excludes: '',
                                     execCommand: """
-                                        docker build -t ${env.AWS_ECR_URI}/kitchana/article:${tag} -f ./inner/DockerfileArticle ./inner
-    
-                                        docker push ${env.AWS_ECR_URI}/kitchana/article:${tag}
+                                        docker build -t ${env.AWS_ECR_URI}/kitchana/authentication:${tag} -f ./inner/DockerfileAuth ./inner
+                                        docker push ${env.AWS_ECR_URI}/kitchana/authentication:${tag}
                                     """,
                                     execTimeout: 180000,
                                     flatten: false,
@@ -60,7 +59,7 @@ pipeline {
                                     remoteDirectory: './inner',
                                     remoteDirectorySDF: false,
                                     removePrefix: 'build/libs',
-                                    sourceFiles: 'build/libs/article-0.0.1-SNAPSHOT.jar'  // 'article' 관련 JAR만 선택
+                                    sourceFiles: 'build/libs/authentication-0.0.1-SNAPSHOT.jar'
                                 )
                             ],
                             usePromotionTimestamp: false,
@@ -71,8 +70,7 @@ pipeline {
                 }
             }
         }
-        
-        // *** Deploy 단계 추가
+
         stage('Deploy to EC2') {
             steps {
                 script {
@@ -85,15 +83,14 @@ pipeline {
                                 sshTransfer(
                                     cleanRemote: false,
                                     excludes: '',
-                                    sourceFiles: 'deploy-article.sh',
+                                    sourceFiles: 'deploy-auth.sh',
                                     removePrefix: '',
                                     remoteDirectory: '/tmp',
                                     execCommand: """
                                         cd /home/ec2-user/tmp
-                                        chmod +x deploy-article.sh
+                                        chmod +x deploy-auth.sh
                                         export TAG=${tag}
-                                        export CONTAINER_NAME=kitchana-article
-                                        ./deploy-article.sh
+                                        ./deploy-auth.sh
                                     """,
                                     execTimeout: 180000,
                                     flatten: false,
