@@ -93,7 +93,7 @@ pipeline {
                                         chmod +x deploy-article.sh
                                         export TAG=${tag}
                                         export CONTAINER_NAME=kitchana-article
-                                        ./deploy.sh
+                                        ./deploy-article.sh
                                     """,
                                     execTimeout: 180000,
                                     flatten: false,
