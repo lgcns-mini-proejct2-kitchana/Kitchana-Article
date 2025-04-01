@@ -77,7 +77,6 @@ pipeline {
             steps {
                 script {
                     def tag = (params.TAG == 'latest' || params.TAG.trim() == '') ? env.BUILD_NUMBER : params.TAG
-                    echo "DEBUG :: AWS_ECR_URI=$AWS_ECR_URI, TAG=$TAG, CONTAINER_NAME=$CONTAINER_NAME"
 
                     sshPublisher(publishers: [
                         sshPublisherDesc(
@@ -91,7 +90,7 @@ pipeline {
                                     remoteDirectory: '/tmp',
                                     execCommand: """
                                         chmod +x /tmp/deploy.sh && \
-                                        AWS_ECR_URI=${AWS_ECR_URI} TAG=${tag} CONTAINER_NAME=kitchana-article /tmp/deploy.sh
+                                        AWS_ECR_URI=${env.AWS_ECR_URI} TAG=${tag} CONTAINER_NAME=kitchana-article /tmp/deploy.sh
                                     """,
                                     execTimeout: 180000,
                                     flatten: false,
