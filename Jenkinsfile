@@ -88,13 +88,13 @@ pipeline {
                                     sourceFiles: 'deploy.sh',
                                     removePrefix: '',
                                     remoteDirectory: '/tmp',
-                                    execCommand: '''
+                                    execCommand: """
                                         cd /home/ec2-user/tmp
                                         chmod +x deploy.sh
                                         export TAG=${tag}
                                         export CONTAINER_NAME=kitchana-article
                                         ./deploy.sh
-                                    ''',
+                                    """,
                                     execTimeout: 180000,
                                     flatten: false,
                                     makeEmptyDirs: false,
